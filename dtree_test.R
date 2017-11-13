@@ -10,15 +10,15 @@ data_dtree <- transform(data_dtree, Consumption = as.numeric(Consumption))
 
 #Split data to data_training and data_test
 split = 0.7
-corte = floor(split*nrow(data_dtree))
-data_training = data_dtree[1:corte,]
-data_test = data_dtree[(corte+1):nrow(data_dtree),]
+corte_dtree = floor(split*nrow(data_dtree))
+data_dtree_training = data_dtree[1:corte_dtree,]
+data_dtree_test = data_dtree[(corte_dtree+1):nrow(data_dtree),]
 
 
 #Split data_training to data_traininVal and  data_validation
-corte.val = floor(split*nrow(data_training))
-data_trainingVal = data_training[1:corte.val,]
-data_validation = data_training[(corte.val+1):nrow(data_training),]
+corte.val_dtree = floor(split*nrow(data_dtree_training))
+data_dtree_trainingVal = data_dtree_training[1:corte.val_dtree,]
+data_dtree_validation = data_dtree_training[(corte.val_dtree+1):nrow(data_dtree_training),]
 
 print(Sys.time())
 
@@ -37,21 +37,21 @@ pr3 <- predict(dt$ctree.out)
 pr4 <- predict(dt$rpart.out)
 
 require(ggplot2)
-x<-c(1:1340)
-y1 <- data_test$Consumption
-y2 <- pr1[1:1340]
-y3 <- pr2[1:1340]
-y4 <- pr3[1:1340]
-y5 <- pr4[1:1340]
+x_dtree<-c(1:1340)
+y1_dtree <- data_dtree_test$Consumption
+y2_dtree <- pr1[1:1340]
+y3_dtree <- pr2[1:1340]
+y4_dtree <- pr3[1:1340]
+y5_dtree <- pr4[1:1340]
 
 
-df<-data.frame(x,y1,y2, y3, y4, y5)
+df<-data.frame(x_dtree,y1_dtree,y2_dtree, y3_dtree, y4_dtree, y5_dtree)
 
-g <- ggplot(df, aes(x))
-g <- g + geom_line(aes(y=y1), color="red")
-g <- g + geom_line(aes(y=y2), colour="green")
-g <- g + geom_line(aes(y=y3), colour="blue")
-g <- g + geom_line(aes(y=y4), colour="black")
-g <- g + geom_line(aes(y=y5), colour="orange")
-g <- g + theme(legend.position="top")
-g
+g_dtree <- ggplot(df, aes(x_dtree))
+g_dtree <- g_dtree + geom_line(aes(y=y1_dtree), color="red")
+g_dtree <- g_dtree + geom_line(aes(y=y2_dtree), colour="green")
+g_dtree <- g_dtree + geom_line(aes(y=y3_dtree), colour="blue")
+g_dtree <- g_dtree + geom_line(aes(y=y4_dtree), colour="black")
+g_dtree <- g_dtree + geom_line(aes(y=y5_dtree), colour="orange")
+g_dtree <- g_dtree + theme(legend.position="top")
+g_dtree
