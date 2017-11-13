@@ -3,16 +3,16 @@ library(evtree)
 library(rpart.utils)
 library(ggplot2)
 
-data <- read.csv(file="C:\\AUDE\\Unamur\\STAGE\\DATA\\1month.csv",head=TRUE,sep=";",stringsAsFactors=F)
-data <- transform(data, Date = as.POSIXct(Date,"%d-%m-%y %H:%M",tz = "UTC"))
-data <- transform(data, Date = as.numeric(Date))
-data <- transform(data, Consumption = as.numeric(Consumption))
+data_dtree <- read.csv(file="C:\\AUDE\\Unamur\\STAGE\\DATA\\1month.csv",head=TRUE,sep=";",stringsAsFactors=F)
+data_dtree <- transform(data_dtree, Date = as.POSIXct(Date,"%d-%m-%y %H:%M",tz = "UTC"))
+data_dtree <- transform(data_dtree, Date = as.numeric(Date))
+data_dtree <- transform(data_dtree, Consumption = as.numeric(Consumption))
 
 #Split data to data_training and data_test
 split = 0.7
-corte = floor(split*nrow(data))
-data_training = data[1:corte,]
-data_test = data[(corte+1):nrow(data),]
+corte = floor(split*nrow(data_dtree))
+data_training = data_dtree[1:corte,]
+data_test = data_dtree[(corte+1):nrow(data_dtree),]
 
 
 #Split data_training to data_traininVal and  data_validation
@@ -22,12 +22,12 @@ data_validation = data_training[(corte.val+1):nrow(data_training),]
 
 print(Sys.time())
 
-dt<- dtree(Consumption ~ Date, data, methods = c("lm", "rpart", "ctree", "evtree"),
+dt<- dtree(Consumption ~ Date, data_dtree, methods = c("lm", "rpart", "ctree", "evtree"),
       samp.method = "repeatedcv", tuneLength = 3, bump.rep = 50,
       subset = FALSE, perc.sub = 0.75, weights = NULL, verbose = TRUE)
 
 # perc.sub :
-# What fraction of data to put into train dataset.1-frac.sub is allocated to test dataset.
+# What fraction of data_dtree to put into train dataset.1-frac.sub is allocated to test dataset.
 
 print(Sys.time())
 plot(dt$evtree.out)
