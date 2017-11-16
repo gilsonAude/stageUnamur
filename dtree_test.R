@@ -3,13 +3,13 @@ library(evtree)
 library(rpart.utils)
 library(ggplot2)
 
-data_dtree <- read.csv(file="C:\\AUDE\\Unamur\\STAGE\\DATA\\1month.csv",head=TRUE,sep=";",stringsAsFactors=F)
+data_dtree <- read.csv(file="C:\\AUDE\\Unamur\\STAGE\\DATA\\1week.csv",head=TRUE,sep=";",stringsAsFactors=F)
 data_dtree <- transform(data_dtree, Date = as.POSIXct(Date,"%d-%m-%y %H:%M",tz = "UTC"))
 data_dtree <- transform(data_dtree, Date = as.numeric(Date))
 data_dtree <- transform(data_dtree, Consumption = as.numeric(Consumption))
 
 #Split data to data_training and data_test
-split = 0.7
+split = 0.75
 corte_dtree = floor(split*nrow(data_dtree))
 data_dtree_training = data_dtree[1:corte_dtree,]
 data_dtree_test = data_dtree[(corte_dtree+1):nrow(data_dtree),]
@@ -23,26 +23,28 @@ data_dtree_validation = data_dtree_training[(corte.val_dtree+1):nrow(data_dtree_
 print(Sys.time())
 
 dt<- dtree(Consumption ~ Date, data_dtree, methods = c("lm", "rpart", "ctree", "evtree"),
-      samp.method = "repeatedcv", tuneLength = 3, bump.rep = 50,
-      subset = FALSE, perc.sub = 0.75, weights = NULL, verbose = TRUE)
+      samp.method = "boot", tuneLength = 3, bump.rep = 50,
+      subset = TRUE, perc.sub = 0.75, weights = NULL, verbose = TRUE)
 
 # perc.sub :
 # What fraction of data_dtree to put into train dataset.1-frac.sub is allocated to test dataset.
 
 print(Sys.time())
 plot(dt$evtree.out)
-pr1 <- predict(dt$evtree.out)
-pr2 <- predict(dt$lm)
-pr3 <- predict(dt$ctree.out)
-pr4 <- predict(dt$rpart.out)
+pr1 <- predict(dt$evtree.out,data_dtree_test)
+pr2 <- predict(dt$lm,data_dtree_test)
+pr3 <- predict(dt$ctree.out,data_dtree_test)
+pr4 <- predict(dt$rpart.out, data_dtree_test)
 
+mreDTREE <- (1/nrow(data_dtree_test))*(sum(abs(data_dtree_test$Consumption - pr1))/data_dtree_test$Consumption)*100
+Taux_error <- mean(mseDTREE)
 require(ggplot2)
-x_dtree<-c(1:1340)
+x_dtree<-c(1:nrow(data_dtree_test))
 y1_dtree <- data_dtree_test$Consumption
-y2_dtree <- pr1[1:1340]
-y3_dtree <- pr2[1:1340]
-y4_dtree <- pr3[1:1340]
-y5_dtree <- pr4[1:1340]
+y2_dtree <- pr1
+y3_dtree <- pr2
+y4_dtree <- pr3
+y5_dtree <- pr4
 
 
 df<-data.frame(x_dtree,y1_dtree,y2_dtree, y3_dtree, y4_dtree, y5_dtree)
