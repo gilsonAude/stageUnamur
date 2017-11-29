@@ -7,7 +7,7 @@ library(evtree)
 ####################################################################
 
 #preparation of data
-data_GA_Alpha <- read.csv(file="C:\\AUDE\\Unamur\\STAGE\\DATA\\1week.csv",head=TRUE,sep=";",stringsAsFactors=F)
+data_GA_Alpha <- read.csv(file="C:\\AUDE\\Unamur\\STAGE\\DATA\\dataset.csv",head=TRUE,sep=";",stringsAsFactors=F)
 #transform character into date
 data_GA_Alpha <- transform(data_GA_Alpha, Date = as.POSIXct(Date,"%d-%m-%y %H:%M",tz = "UTC"))
 #transform date into numeric
@@ -21,7 +21,6 @@ data_GA_Alpha_test = data_GA_Alpha[(corte+1):nrow(data_GA_Alpha),]
 
 nbRow <- nrow(data_GA_Alpha_training)
 
-print(Sys.time())
 res <- c()
 res <- c(format(Sys.time(), "%d-%b-%Y %H.%M"))
 
@@ -50,8 +49,11 @@ GA2 <- ga(type = "real-valued", fitness = function (x) Fitness(x[1]),
           run = 2)
 
 alpha <- slot(GA2, "solution")
-summary(GA2)
-plot(GA2)
+res<-c(res,summary(GA2))
+plotGA <- plot(GA2)
+ggsave("filename", plot = plotGA, device = "pdf", path = "",
+                  scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),
+                   dpi = 300, limitsize = TRUE)
 res <- c(res,alpha)
 res <- c(res,(format(Sys.time(), "%d-%b-%Y %H.%M")))
 print(Sys.time())

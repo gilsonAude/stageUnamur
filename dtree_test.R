@@ -36,8 +36,18 @@ pr2 <- predict(dt$lm,data_dtree_test)
 pr3 <- predict(dt$ctree.out,data_dtree_test)
 pr4 <- predict(dt$rpart.out, data_dtree_test)
 
-mreDTREE <- (1/nrow(data_dtree_test))*(sum(abs(data_dtree_test$Consumption - pr1))/data_dtree_test$Consumption)*100
-Taux_error <- mean(mseDTREE)
+mreDTREE_Ev <- (1/nrow(data_dtree_test))*(sum(abs(data_dtree_test$Consumption - pr1))/data_dtree_test$Consumption)*100
+rate_error_Ev <- mean(mreDTREE_Ev)
+
+mreDTREE_lm <- (1/nrow(data_dtree_test))*(sum(abs(data_dtree_test$Consumption - pr2))/data_dtree_test$Consumption)*100
+rate_error_lm <- mean(mreDTREE_lm)
+
+mreDTREE_ctree <- (1/nrow(data_dtree_test))*(sum(abs(data_dtree_test$Consumption - pr3))/data_dtree_test$Consumption)*100
+rate_error_ctree <- mean(mreDTREE_ctree)
+
+mreDTREE_rpart <- (1/nrow(data_dtree_test))*(sum(abs(data_dtree_test$Consumption - pr4))/data_dtree_test$Consumption)*100
+rate_error_rpart<- mean(mreDTREE_rpart)
+
 require(ggplot2)
 x_dtree<-c(1:nrow(data_dtree_test))
 y1_dtree <- data_dtree_test$Consumption

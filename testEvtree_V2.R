@@ -23,11 +23,7 @@ corte = floor(split*nrow(data_evtree))
 data_evtree_training = data_evtree[1:corte,]
 data_evtree_test = data_evtree[(corte+1):nrow(data_evtree),]
 
-
-#Split data_training to data_traininVal and  data_validation
-corte.val_evtree = floor(split*nrow(data_evtree_training))
-data_evtree_trainingVal = data_evtree_training[1:corte.val_evtree,]
-data_evtree_validation = data_evtree_training[(corte.val_evtree+1):nrow(data_evtree_training),]
+sub <- nrow(data_evtree)*0.75
 
 controlEv <- evtree.control(minbucket = 8L, minsplit = 20L, maxdepth = 9L,
                             niterations = 10000L, ntrees = 100L, alpha =0.25,
@@ -38,28 +34,28 @@ controlEv <- evtree.control(minbucket = 8L, minsplit = 20L, maxdepth = 9L,
  
 print(Sys.time())
 
-Evtree_model <- evtree(Consumption ~ Date + Hour, 
-                       data = data_evtree,subset = TRUE, control = controlEv)
+Evtree_modelV2 <- evtree(Consumption ~ Date + Hour, 
+                       data = data_evtree,subset = 1:sub, control = controlEv)
 print(Sys.time())
 
-plot(Evtree_model)
-predictValue_evtree <- predict(Evtree_model,data_evtree_test)
+plot(Evtree_modelV2)
+predictValue_evtreeV2 <- predict(Evtree_modelV2,data_evtree_test)
 nbRow <- nrow(data_evtree_test)
 
-mseEVTREE <- sum(data_evtree$Consumption - predictValue_evtree[1:nbRow])^2
-mreEVTREE <- (1/nrow(data_evtree_test))*(sum(abs(data_evtree_test$Consumption - predictValue_evtree[1:nbRow]))/data_evtree_test$Consumption)*100
-Taux_error_Evtree <- mean(mreEVTREE)
+mseEVTREEV2 <- sum(data_evtree$Consumption - predictValue_evtreeV2[1:nbRow])^2
+mreEVTREEV2 <- (1/nbRow)*(sum(abs(data_evtree_test$Consumption - predictValue_evtreeV2))/data_evtree_test$Consumption)*100
+Taux_error_EvtreeV2 <- mean(mreEVTREEV2)
 #Do the plot real and predict data
 require(ggplot2)
-x_evtree<-c(1:nbRow)
-y1_evtree <- data_evtree_test$Consumption
-y2_evtree <- predictValue_evtree[1:nbRow]
+x_evtreeV2<-c(1:nbRow)
+y1_evtreeV2 <- data_evtree_test$Consumption
+y2_evtreeV2 <- predictValue_evtreeV2
 
-df<-data.frame(x_evtree,y1_evtree,y2_evtree)
+df<-data.frame(x_evtreeV2,y1_evtreeV2,y2_evtreeV2)
 
-g_evtree <- ggplot(df, aes(x_evtree))
-g_evtree  <- g_evtree  + geom_line(aes(y=y1_evtree), colour="red")
-g_evtree  <- g_evtree  + geom_line(aes(y=y2_evtree), colour="green")
-g_evtree 
+g_evtreeV2 <- ggplot(df, aes(x_evtreeV2))
+g_evtreeV2  <- g_evtreeV2  + geom_line(aes(y=y1_evtreeV2), colour="red")
+g_evtreeV2  <- g_evtreeV2  + geom_line(aes(y=y2_evtreeV2), colour="green")
+g_evtreeV2 
 
 
